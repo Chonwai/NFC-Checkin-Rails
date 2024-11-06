@@ -44,6 +44,9 @@ end
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  
+  # Add annotate gem for model annotations
+  gem 'annotate'
 end
 
 gem 'dotenv-rails', groups: %i[development test]
