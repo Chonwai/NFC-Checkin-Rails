@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  phone: MyString
+  email: MyString
+  uuid: MyString
+  activity: one
+  user: one
+  is_temporary: false
+  meta: 
+
+two:
+  phone: MyString
+  email: MyString
+  uuid: MyString
+  activity: two
+  user: two
+  is_temporary: false
+  meta: 

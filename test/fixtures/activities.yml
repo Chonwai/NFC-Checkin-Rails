@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  date: 2024-11-07 17:36:33
+  qr_code_uuid: MyString
+  description: MyText
+  meta: 
+
+two:
+  name: MyString
+  date: 2024-11-07 17:36:33
+  qr_code_uuid: MyString
+  description: MyText
+  meta: 

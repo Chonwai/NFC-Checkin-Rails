@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  temp_user: one
+  location: one
+  checkin_time: 2024-11-07 17:43:10
+  meta: 
+
+two:
+  temp_user: two
+  location: two
+  checkin_time: 2024-11-07 17:43:10
+  meta: 
