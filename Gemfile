@@ -51,3 +51,6 @@ end
 
 gem 'dotenv-rails', groups: %i[development test]
 gem 'rack-cors'
+
+gem 'api-pagination'
+gem 'kaminari'

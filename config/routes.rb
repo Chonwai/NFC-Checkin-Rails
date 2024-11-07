@@ -9,10 +9,10 @@ Rails.application.routes.draw do
           end
         end
       end
-      
-      resources :check_ins, only: [:create, :index]
-      resources :rewards, only: [:index, :show]
-      resources :users, only: [:create, :show, :update]
+
+      resources :check_ins, only: %i[create index]
+      resources :rewards, only: %i[index show]
+      resources :users, only: %i[create show update]
     end
   end
 end
