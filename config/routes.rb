@@ -14,5 +14,9 @@ Rails.application.routes.draw do
       resources :rewards, only: %i[index show]
       resources :users, only: %i[create show update]
     end
+
+    namespace :admin do
+      resources :activities, only: %i[index show update]
+    end
   end
 end

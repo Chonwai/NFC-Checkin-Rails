@@ -13,10 +13,12 @@
 #  updated_at   :datetime         not null
 #
 class TempUser < ApplicationRecord
-  belongs_to :activity, optional: true
+  belongs_to :activity
   belongs_to :user, optional: true
   has_many :check_ins, dependent: :destroy
   has_many :rewards, dependent: :destroy
 
   validates :is_temporary, inclusion: { in: [true, false] }
+  validates :phone, presence: true, unless: :email?
+  validates :email, presence: true, unless: :phone?
 end
