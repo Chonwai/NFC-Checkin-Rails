@@ -4,15 +4,16 @@
 #
 # Table name: activities
 #
-#  id           :uuid             not null, primary key
-#  name         :string
-#  description  :text
-#  start_date   :datetime         not null
-#  end_date     :datetime         not null
-#  qr_code_uuid :string           not null
-#  meta         :jsonb
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id                   :uuid             not null, primary key
+#  name                 :string
+#  description          :text
+#  start_date           :datetime         not null
+#  end_date             :datetime         not null
+#  meta                 :jsonb
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  check_in_limit       :integer          default(1)
+#  single_location_only :boolean          default(FALSE)
 #
 class Activity < ApplicationRecord
   has_many :locations, dependent: :destroy
@@ -24,7 +25,8 @@ class Activity < ApplicationRecord
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :check_in_limit, presence: true, numericality: { greater_than: 0 }
-  validates :check_in_limit_consistency
+
+  validate :check_in_limit_consistency
 
   # 新增方法來獲取所有關聯的 CheckIns
   def check_ins
