@@ -18,13 +18,13 @@ class Activity < ApplicationRecord
   has_many :locations, dependent: :destroy
   has_many :temp_users, dependent: :destroy
 
+  before_validation :generate_qr_code_uuid
+
   validates :name, presence: true
   validates :start_date, presence: true
   validates :end_date, presence: true
-  validates :qr_code_uuid, presence: true, uniqueness: true
   validates :check_in_limit, presence: true, numericality: { greater_than: 0 }
-
-  before_validation :generate_qr_code_uuid
+  validates :check_in_limit_consistency
 
   # 新增方法來獲取所有關聯的 CheckIns
   def check_ins
@@ -49,11 +49,15 @@ class Activity < ApplicationRecord
 
   private
 
-  def generate_qr_code_uuid
-    self.qr_code_uuid = SecureRandom.uuid if qr_code_uuid.blank?
-  end
-
   def ensure_single_location
     locations.offset(1).destroy_all if locations.count > 1
+  end
+
+  def check_in_limit_consistency
+    return if single_location_only
+
+    return unless check_in_limit > 1
+
+    errors.add(:check_in_limit, '多地點活動每個地點只能打卡一次')
   end
 end

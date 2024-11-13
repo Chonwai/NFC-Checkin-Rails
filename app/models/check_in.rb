@@ -17,11 +17,10 @@ class CheckIn < ApplicationRecord
   belongs_to :location
 
   validates :checkin_time, presence: true
-
-  before_validation :set_checkin_time
-
   validate :check_in_limit_not_exceeded
   validate :location_belongs_to_activity
+
+  before_validation :set_checkin_time
 
   # 新增方法來獲取關聯的 Activity
   def activity
@@ -38,9 +37,13 @@ class CheckIn < ApplicationRecord
     return unless temp_user && location
 
     activity = location.activity
-    return unless activity.check_in_limit_reached?(temp_user)
-
-    errors.add(:base, '已達到打卡次數上限')
+    if activity.single_location_only
+      # 單一地點模式：檢查總打卡次數
+      errors.add(:base, '已達到打卡次數上限') if activity.check_in_limit_reached?(temp_user)
+    elsif temp_user.check_ins.exists?(location_id: location.id)
+      # 多地點模式：檢查每個地點是否已經打卡
+      errors.add(:base, '此地點已經打卡過')
+    end
   end
 
   def location_belongs_to_activity

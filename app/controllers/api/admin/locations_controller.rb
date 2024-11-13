@@ -2,66 +2,66 @@
 
 module Api
   module Admin
-    class ActivitiesController < ApplicationController
+    class LocationsController < ApplicationController
       include AdminAuthenticator
-      before_action :set_activity, only: %i[show update destroy]
+      before_action :set_activity
+      before_action :set_location, only: %i[show update destroy]
 
       def index
-        activities = Activity.all
         render json: {
           success: true,
-          activities:
+          locations: @activity.locations
         }
       end
 
       def show
         render json: {
           success: true,
-          activity: @activity
+          location: @location
         }
       end
 
       def create
-        activity = Activity.new(activity_params)
-        if activity.save
+        location = @activity.locations.build(location_params)
+        if location.save
           render json: {
             success: true,
-            activity:
+            location:
           }, status: :created
         else
           render json: {
             success: false,
-            errors: activity.errors.full_messages
+            errors: location.errors.full_messages
           }, status: :unprocessable_entity
         end
       end
 
       def update
-        if @activity.update(activity_params)
+        if @location.update(location_params)
           render json: {
             success: true,
-            activity: @activity
+            location: @location
           }
         else
           render json: {
             success: false,
-            errors: @activity.errors.full_messages
+            errors: @location.errors.full_messages
           }, status: :unprocessable_entity
         end
       end
 
       def destroy
-        @activity.destroy
+        @location.destroy
         render json: {
           success: true,
-          message: '活動已刪除'
+          message: '地點已刪除'
         }
       end
 
       private
 
       def set_activity
-        @activity = Activity.find(params[:id])
+        @activity = Activity.find(params[:activity_id])
       rescue ActiveRecord::RecordNotFound
         render json: {
           success: false,
@@ -69,9 +69,17 @@ module Api
         }, status: :not_found
       end
 
-      def activity_params
-        params.require(:activity).permit(:name, :start_date, :end_date, :description,
-                                         :check_in_limit, :single_location_only)
+      def set_location
+        @location = @activity.locations.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: {
+          success: false,
+          error: '地點未找到'
+        }, status: :not_found
+      end
+
+      def location_params
+        params.require(:location).permit(:name, :address, :description)
       end
     end
   end

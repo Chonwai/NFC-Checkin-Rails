@@ -10,7 +10,9 @@ Rails.application.routes.draw do
 
     namespace :admin do
       resources :activities
+      resources :locations
     end
-    resources :locations
+
+    resources :locations, only: %i[index show]
   end
 end
