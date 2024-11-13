@@ -2,7 +2,7 @@
 
 module Api
   class CheckInsController < ApplicationController
-    before_action :authorize_temp_user
+    before_action :authorize_or_create_temp_user
 
     def create
       check_in = @current_temp_user.check_ins.build(check_in_params)
@@ -39,8 +39,21 @@ module Api
       params.require(:check_in).permit(:location_id)
     end
 
-    def authorize_temp_user
-      @current_temp_user = TempUser.find_by(uuid: request.headers['X-Temp-User-Token'])
+    def authorize_or_create_temp_user
+      token = request.headers['X-Temp-User-Token']
+      device_id = params[:device_id]
+
+      if token.present?
+        @current_temp_user = TempUser.find_by(uuid: token)
+      elsif device_id.present?
+        @current_temp_user = TempUser.find_or_create_by(device_id:,
+                                                        activity_id: params[:activity_id]) do |temp_user|
+          temp_user.is_temporary = true
+          temp_user.meta = { device_id: }
+          temp_user.uuid = SecureRandom.uuid
+        end
+      end
+
       return if @current_temp_user
 
       render json: { error: '未授權的臨時用戶' }, status: :unauthorized

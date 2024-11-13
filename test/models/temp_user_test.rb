@@ -13,6 +13,7 @@
 #  meta         :jsonb
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#  device_id    :string           default(""), not null
 #
 require 'test_helper'
 

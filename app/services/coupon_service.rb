@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class CouponService
-  include HTTParty
-  base_uri ENV.fetch('COUPON_SERVICE_URL', 'http://coupon-service.example.com')
-
   def self.issue_coupon(user_identifier:, activity_id:)
     response = post('/api/v1/coupons',
                     body: {
