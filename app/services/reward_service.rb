@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RewardService
   def initialize(temp_user)
     @temp_user = temp_user

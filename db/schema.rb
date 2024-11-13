@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -10,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_241_107_094_409) do
+ActiveRecord::Schema[7.0].define(version: 20_241_113_155_807) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -68,7 +70,9 @@ ActiveRecord::Schema[7.0].define(version: 20_241_107_094_409) do
     t.jsonb 'meta', default: {}
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.string 'device_id', default: '', null: false
     t.index ['activity_id'], name: 'index_temp_users_on_activity_id'
+    t.index %w[device_id activity_id], name: 'index_temp_users_on_device_id_and_activity_id', unique: true
     t.index ['user_id'], name: 'index_temp_users_on_user_id'
   end
 

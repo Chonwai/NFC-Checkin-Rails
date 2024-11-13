@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   class LocationsController < ApplicationController
     before_action :authorize

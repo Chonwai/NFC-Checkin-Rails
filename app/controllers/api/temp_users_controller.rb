@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TempUsersController < ApplicationController
   def create
     activity = Activity.find(params[:activity_id])

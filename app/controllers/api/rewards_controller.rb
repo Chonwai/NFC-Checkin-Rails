@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   class RewardsController < ApplicationController
     before_action :authorize_temp_user

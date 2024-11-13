@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateTempUsers < ActiveRecord::Migration[7.0]
   def change
     create_table :temp_users, id: :uuid do |t|

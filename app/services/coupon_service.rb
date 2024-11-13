@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CouponService
   include HTTParty
   base_uri ENV.fetch('COUPON_SERVICE_URL', 'http://coupon-service.example.com')
