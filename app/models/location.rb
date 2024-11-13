@@ -20,6 +20,8 @@ class Location < ApplicationRecord
   validates :name, presence: true
   validates :address, presence: true
 
+  validate :single_location_constraint
+
   def activity_details
     {
       name: activity.name,
@@ -31,5 +33,13 @@ class Location < ApplicationRecord
 
   def belongs_to_activity?(activity_id)
     activity_id == activity.id
+  end
+
+  private
+
+  def single_location_constraint
+    return unless activity&.single_location_only? && activity.locations.where.not(id:).exists?
+
+    errors.add(:base, '此活動只允許一個地點')
   end
 end
