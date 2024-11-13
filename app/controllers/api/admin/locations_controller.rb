@@ -4,20 +4,20 @@ module Api
   module Admin
     class LocationsController < ApplicationController
       include AdminAuthenticator
-      before_action :set_activity
+      before_action :set_activity, only: %i[create]
       before_action :set_location, only: %i[show update destroy]
 
       def index
         render json: {
           success: true,
-          locations: @activity.locations
+          locations: Location.all
         }
       end
 
       def show
         render json: {
           success: true,
-          location: @location
+          location: Location.find(params[:id])
         }
       end
 
@@ -61,7 +61,7 @@ module Api
       private
 
       def set_activity
-        @activity = Activity.find(params[:activity_id])
+        @activity = Activity.find(params.require(:location).require(:activity_id))
       rescue ActiveRecord::RecordNotFound
         render json: {
           success: false,
@@ -70,7 +70,7 @@ module Api
       end
 
       def set_location
-        @location = @activity.locations.find(params[:id])
+        @location = Location.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         render json: {
           success: false,
@@ -79,7 +79,7 @@ module Api
       end
 
       def location_params
-        params.require(:location).permit(:name, :address, :description)
+        params.require(:location).permit(:name, :address, :description, :activity_id)
       end
     end
   end

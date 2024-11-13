@@ -10,14 +10,14 @@ module Api
         activities = Activity.all
         render json: {
           success: true,
-          activities:
+          activities: activities.as_json(include: :locations)
         }
       end
 
       def show
         render json: {
           success: true,
-          activity: @activity
+          activity: @activity.as_json(include: :locations)
         }
       end
 

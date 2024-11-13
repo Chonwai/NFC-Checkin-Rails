@@ -19,8 +19,6 @@ class Activity < ApplicationRecord
   has_many :locations, dependent: :destroy
   has_many :temp_users, dependent: :destroy
 
-  before_validation :generate_qr_code_uuid
-
   validates :name, presence: true
   validates :start_date, presence: true
   validates :end_date, presence: true
