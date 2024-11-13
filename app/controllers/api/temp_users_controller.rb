@@ -13,20 +13,24 @@ module Api
         unless temp_user.persisted?
           temp_user.is_temporary = true
           temp_user.meta = { device_id: }
-          # 生成一個唯一的 UUID 作為 TempUser 的 UUID
-          temp_user.uuid = SecureRandom.uuid
         end
 
         if temp_user.save
           render json: {
-            temp_user:,
-            token: temp_user.uuid
+            success: true,
+            temp_user:
           }, status: :created
         else
-          render json: { errors: temp_user.errors.full_messages }, status: :unprocessable_entity
+          render json: {
+            success: false,
+            errors: temp_user.errors.full_messages
+          }, status: :unprocessable_entity
         end
       else
-        render json: { error: '裝置識別符缺失' }, status: :bad_request
+        render json: {
+          success: false,
+          error: '裝置識別符缺失'
+        }, status: :bad_request
       end
     end
 

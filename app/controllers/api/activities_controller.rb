@@ -6,11 +6,17 @@ module Api
 
     def index
       activities = Activity.all
-      render json: activities
+      render json: {
+        success: true,
+        activities:
+      }
     end
 
     def show
-      render json: @activity
+      render json: {
+        success: true,
+        activity: @activity
+      }
     end
 
     private
@@ -18,7 +24,10 @@ module Api
     def set_activity
       @activity = Activity.find(params[:id])
     rescue ActiveRecord::RecordNotFound
-      render json: { error: '活動未找到' }, status: :not_found
+      render json: {
+        success: false,
+        error: '活動未找到'
+      }, status: :not_found
     end
 
     def activity_params

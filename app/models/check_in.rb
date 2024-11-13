@@ -20,6 +20,11 @@ class CheckIn < ApplicationRecord
 
   before_validation :set_checkin_time
 
+  # 新增方法來獲取關聯的 Activity
+  def activity
+    temp_user.activity
+  end
+
   private
 
   def set_checkin_time

@@ -25,6 +25,11 @@ class Activity < ApplicationRecord
 
   before_validation :generate_qr_code_uuid
 
+  # 新增方法來獲取所有關聯的 CheckIns
+  def check_ins
+    CheckIn.joins(:temp_user).where(temp_users: { activity_id: id })
+  end
+
   private
 
   def generate_qr_code_uuid

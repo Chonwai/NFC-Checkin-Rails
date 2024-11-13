@@ -2,17 +2,15 @@
 
 Rails.application.routes.draw do
   namespace :api do
-    namespace :v1 do
-      resources :activities do
-        resources :check_ins, only: %i[create index]
-        resources :temp_users, only: [:create]
-        resources :rewards, only: %i[index show update]
-      end
-
-      namespace :admin do
-        resources :activities
-      end
-      resources :locations
+    resources :activities do
+      resources :check_ins, only: %i[create index]
+      resources :temp_users, only: [:create]
+      resources :rewards, only: %i[index show update]
     end
+
+    namespace :admin do
+      resources :activities
+    end
+    resources :locations
   end
 end

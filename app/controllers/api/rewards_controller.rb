@@ -6,25 +6,43 @@ module Api
 
     def index
       rewards = @current_temp_user.rewards
-      render json: rewards
+      render json: {
+        success: true,
+        rewards:
+      }
     end
 
     def show
       reward = @current_temp_user.rewards.find(params[:id])
-      render json: reward
+      render json: {
+        success: true,
+        reward:
+      }
     rescue ActiveRecord::RecordNotFound
-      render json: { error: '獎勵未找到' }, status: :not_found
+      render json: {
+        success: false,
+        error: '獎勵未找到'
+      }, status: :not_found
     end
 
     def update
       reward = @current_temp_user.rewards.find(params[:id])
       if reward.update(reward_params)
-        render json: reward
+        render json: {
+          success: true,
+          reward:
+        }
       else
-        render json: { errors: reward.errors.full_messages }, status: :unprocessable_entity
+        render json: {
+          success: false,
+          errors: reward.errors.full_messages
+        }, status: :unprocessable_entity
       end
     rescue ActiveRecord::RecordNotFound
-      render json: { error: '獎勵未找到' }, status: :not_found
+      render json: {
+        success: false,
+        error: '獎勵未找到'
+      }, status: :not_found
     end
 
     private

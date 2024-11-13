@@ -10,27 +10,33 @@ module Api
 
       if check_in.save
         begin
-          # 發放獎勵
           reward = RewardService.new(@current_temp_user).grant_reward
           render json: {
+            success: true,
             check_in:,
             reward:
           }, status: :created
         rescue StandardError => e
-          # 打卡成功但獎勵發放失敗
           render json: {
+            success: true,
             check_in:,
             reward_error: e.message
           }, status: :created
         end
       else
-        render json: { errors: check_in.errors.full_messages }, status: :unprocessable_entity
+        render json: {
+          success: false,
+          errors: check_in.errors.full_messages
+        }, status: :unprocessable_entity
       end
     end
 
     def index
       check_ins = @current_temp_user.check_ins
-      render json: check_ins
+      render json: {
+        success: true,
+        check_ins:
+      }
     end
 
     private
@@ -44,13 +50,12 @@ module Api
       device_id = params[:device_id]
 
       if token.present?
-        @current_temp_user = TempUser.find_by(uuid: token)
+        @current_temp_user = TempUser.find_by(device_id: token, activity_id: params[:activity_id])
       elsif device_id.present?
         @current_temp_user = TempUser.find_or_create_by(device_id:,
                                                         activity_id: params[:activity_id]) do |temp_user|
           temp_user.is_temporary = true
           temp_user.meta = { device_id: }
-          temp_user.uuid = SecureRandom.uuid
         end
       end
 
