@@ -30,6 +30,14 @@ class Activity < ApplicationRecord
     CheckIn.joins(:temp_user).where(temp_users: { activity_id: id })
   end
 
+  def location_names
+    locations.pluck(:name)
+  end
+
+  def includes_location?(location_id)
+    locations.exists?(id: location_id)
+  end
+
   private
 
   def generate_qr_code_uuid

@@ -19,4 +19,17 @@ class Location < ApplicationRecord
 
   validates :name, presence: true
   validates :address, presence: true
+
+  def activity_details
+    {
+      name: activity.name,
+      description: activity.description,
+      start_date: activity.start_date,
+      end_date: activity.end_date
+    }
+  end
+
+  def belongs_to_activity?(activity_id)
+    activity_id == activity.id
+  end
 end
