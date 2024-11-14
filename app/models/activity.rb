@@ -14,6 +14,7 @@
 #  updated_at           :datetime         not null
 #  check_in_limit       :integer          default(1)
 #  single_location_only :boolean          default(FALSE)
+#  is_active            :boolean          default(false)
 #
 class Activity < ApplicationRecord
   has_many :locations, dependent: :destroy
@@ -23,6 +24,7 @@ class Activity < ApplicationRecord
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :check_in_limit, presence: true, numericality: { greater_than: 0 }
+  validates :is_active, inclusion: { in: [true, false] }
 
   validate :check_in_limit_consistency
 
@@ -46,6 +48,14 @@ class Activity < ApplicationRecord
 
   # 如果是單一地點模式，確保只能有一個地點
   after_save :ensure_single_location, if: :single_location_only?
+
+  # 添加一個範圍方法來獲取活躍的活動
+  scope :active, -> { where(is_active: true) }
+
+  # 添加一個方法來檢查活動是否活躍
+  def active?
+    is_active
+  end
 
   private
 

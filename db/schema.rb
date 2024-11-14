@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_241_113_180_116) do
+ActiveRecord::Schema[7.0].define(version: 20_241_114_175_912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -26,6 +26,7 @@ ActiveRecord::Schema[7.0].define(version: 20_241_113_180_116) do
     t.datetime 'updated_at', null: false
     t.integer 'check_in_limit', default: 1
     t.boolean 'single_location_only', default: false
+    t.boolean 'is_active', default: false
   end
 
   create_table 'check_ins', id: :uuid, default: -> { 'gen_random_uuid()' }, force: :cascade do |t|

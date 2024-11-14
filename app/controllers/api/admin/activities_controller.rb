@@ -70,8 +70,15 @@ module Api
       end
 
       def activity_params
-        params.require(:activity).permit(:name, :start_date, :end_date, :description,
-                                         :check_in_limit, :single_location_only)
+        params.require(:activity).permit(
+          :name,
+          :start_date,
+          :end_date,
+          :description,
+          :check_in_limit,
+          :single_location_only,
+          :is_active
+        )
       end
     end
   end

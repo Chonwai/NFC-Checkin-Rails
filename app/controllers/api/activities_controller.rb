@@ -5,7 +5,7 @@ module Api
     before_action :set_activity, only: %i[show update]
 
     def index
-      activities = Activity.all
+      activities = Activity.active
       render json: {
         success: true,
         activities:

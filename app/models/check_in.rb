@@ -19,6 +19,7 @@ class CheckIn < ApplicationRecord
   validates :checkin_time, presence: true
   validate :check_in_limit_not_exceeded
   validate :location_belongs_to_activity
+  validate :activity_must_be_active
 
   before_validation :set_checkin_time
 
@@ -52,5 +53,14 @@ class CheckIn < ApplicationRecord
     return if temp_user.activity_id == location.activity_id
 
     errors.add(:location, '不屬於當前活動')
+  end
+
+  def activity_must_be_active
+    return unless temp_user && location
+
+    activity = location.activity
+    return if activity.active?
+
+    errors.add(:base, '此活動目前未開放打卡')
   end
 end
