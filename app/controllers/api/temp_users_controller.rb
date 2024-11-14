@@ -5,7 +5,7 @@ module Api
     before_action :set_activity
 
     def create
-      device_id = temp_user_params[:device_id]
+      device_id = request.headers['X-Temp-User-Token']
 
       if device_id.present?
         temp_user = @activity.temp_users.find_or_initialize_by(device_id:)

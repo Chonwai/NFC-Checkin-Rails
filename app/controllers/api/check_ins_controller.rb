@@ -2,7 +2,40 @@
 
 module Api
   class CheckInsController < ApplicationController
-    before_action :authorize_or_create_temp_user
+    before_action :authorize_or_create_temp_user, only: %i[create]
+    before_action :set_current_temp_user, only: %i[index index_with_activity show]
+
+    def index
+      check_ins = @current_temp_user.check_ins
+      render json: {
+        success: true,
+        check_ins:
+      }
+    end
+
+    def index_with_activity
+      check_ins = @current_temp_user.check_ins.includes(:location)
+      puts @current_temp_user.check_ins
+      render json: {
+        success: true,
+        check_ins: check_ins.map do |check_in|
+          {
+            id: check_in.id,
+            check_in:,
+            location: check_in.location,
+            activity: check_in.activity
+          }
+        end
+      }
+    end
+
+    def show
+      check_in = @current_temp_user.check_ins.find(params[:id])
+      render json: {
+        success: true,
+        check_in:
+      }
+    end
 
     def create
       check_in = @current_temp_user.check_ins.build(check_in_params)
@@ -31,29 +64,22 @@ module Api
       end
     end
 
-    def index
-      check_ins = @current_temp_user.check_ins
-      render json: {
-        success: true,
-        check_ins:
-      }
-    end
-
     private
 
     def check_in_params
       params.require(:check_in).permit(:location_id)
     end
 
-    def authorize_or_create_temp_user
-      token = request.headers['X-Temp-User-Token']
-      device_id = params[:device_id]
+    def set_current_temp_user
+      device_id = request.headers['X-Temp-User-Token']
+      @current_temp_user = TempUser.find_by(device_id:)
+    end
 
-      if token.present?
-        @current_temp_user = TempUser.find_by(device_id: token, activity_id: params[:activity_id])
-      elsif device_id.present?
-        @current_temp_user = TempUser.find_or_create_by(device_id:,
-                                                        activity_id: params[:activity_id]) do |temp_user|
+    def authorize_or_create_temp_user
+      device_id = request.headers['X-Temp-User-Token']
+
+      if device_id.present
+        @current_temp_user = TempUser.find_or_create_by(device_id:, activity_id: params[:activity_id]) do |temp_user|
           temp_user.is_temporary = true
           temp_user.meta = { device_id: }
         end

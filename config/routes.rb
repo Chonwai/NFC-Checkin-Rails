@@ -14,5 +14,10 @@ Rails.application.routes.draw do
     end
 
     resources :locations, only: %i[index show]
+    resources :check_ins do
+      collection do
+        get :index_with_activity
+      end
+    end
   end
 end

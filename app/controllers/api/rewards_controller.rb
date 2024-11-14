@@ -52,7 +52,9 @@ module Api
     end
 
     def authorize_temp_user
-      @current_temp_user = TempUser.find_by(uuid: request.headers['X-Temp-User-Token'])
+      device_id = request.headers['X-Temp-User-Token']
+      @current_temp_user = TempUser.find_by(device_id:)
+
       return if @current_temp_user
 
       render json: { error: '未授權的臨時用戶' }, status: :unauthorized

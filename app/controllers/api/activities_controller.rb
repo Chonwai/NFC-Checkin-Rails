@@ -15,7 +15,7 @@ module Api
     def show
       render json: {
         success: true,
-        activity: @activity
+        activity: @activity.as_json(include: :locations)
       }
     end
 
