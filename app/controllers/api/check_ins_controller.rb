@@ -33,8 +33,7 @@ module Api
 
       if check_in.save
         begin
-          reward = RewardService.new(@current_temp_user).grant_reward
-          api_success({ check_in:, reward: }, :created)
+          api_success({ check_in: }, :created)
         rescue StandardError => e
           api_success(
             { check_in:, reward_error: e.message },
@@ -55,21 +54,22 @@ module Api
     def set_current_temp_user
       device_id = request.headers['X-Temp-User-Token']
       @current_temp_user = TempUser.find_by(device_id:)
-      api_error('未授權的臨時用戶', :unauthorized, code: ErrorCodes::UNAUTHORIZED) unless @current_temp_user
+      api_error('你還沒有參與任何活動', :unauthorized, code: ErrorCodes::UNAUTHORIZED) unless @current_temp_user
     end
 
     def authorize_or_create_temp_user
       device_id = request.headers['X-Temp-User-Token']
+      activity_id = params.dig(:check_in, :activity_id)
 
-      if device_id.present?
-        @current_temp_user = TempUser.find_or_create_by(device_id:, activity_id: params[:activity_id]) do |temp_user|
+      if device_id.present? && activity_id.present?
+        @current_temp_user = TempUser.find_or_create_by(device_id:, activity_id:) do |temp_user|
           temp_user.is_temporary = true
           temp_user.meta = { device_id: }
         end
         return if @current_temp_user
       end
 
-      api_error('未授權的臨時用戶', :unauthorized, code: ErrorCodes::UNAUTHORIZED)
+      api_error('未授權的臨時用戶', ErrorCodes::UNAUTHORIZED)
     end
   end
 end

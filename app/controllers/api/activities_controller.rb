@@ -23,7 +23,7 @@ module Api
         check_ins = temp_user.check_ins.includes(:location)
         api_success(check_ins: check_ins.as_json(include: :location))
       else
-        api_error('臨時用戶未找到或不屬於此活動', :unprocessable_entity, code: ErrorCodes::UNAUTHORIZED)
+        api_error('你還沒有參加此活動', ErrorCodes::UNAUTHORIZED)
       end
     end
 

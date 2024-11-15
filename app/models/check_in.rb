@@ -50,6 +50,9 @@ class CheckIn < ApplicationRecord
   def location_belongs_to_activity
     return unless temp_user && location
 
+    puts 'temp_user: ', temp_user.inspect
+    puts 'location: ', location.inspect
+
     return if temp_user.activity_id == location.activity_id
 
     errors.add(:location, '不屬於當前活動')
