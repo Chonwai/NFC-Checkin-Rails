@@ -3,7 +3,10 @@
 Rails.application.routes.draw do
   namespace :api do
     resources :activities do
-      resources :check_ins, only: %i[create index]
+      member do
+        get :check_ins, to: 'activities#list_check_ins'
+      end
+      # resources :check_ins, only: %i[create index]
       resources :temp_users, only: [:create]
       resources :rewards, only: %i[index show update]
     end

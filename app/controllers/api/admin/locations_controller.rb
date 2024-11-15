@@ -8,74 +8,43 @@ module Api
       before_action :set_location, only: %i[show update destroy]
 
       def index
-        render json: {
-          success: true,
-          locations: Location.all
-        }
+        api_success(locations: Location.all)
       end
 
       def show
-        render json: {
-          success: true,
-          location: Location.find(params[:id])
-        }
+        api_success(location: @location)
       end
 
       def create
         location = @activity.locations.build(location_params)
         if location.save
-          render json: {
-            success: true,
-            location:
-          }, status: :created
+          api_success({ location: }, :created)
         else
-          render json: {
-            success: false,
-            errors: location.errors.full_messages
-          }, status: :unprocessable_entity
+          api_error('地點創建失敗', :unprocessable_entity, location.errors.full_messages)
         end
       end
 
       def update
         if @location.update(location_params)
-          render json: {
-            success: true,
-            location: @location
-          }
+          api_success(location: @location)
         else
-          render json: {
-            success: false,
-            errors: @location.errors.full_messages
-          }, status: :unprocessable_entity
+          api_error('地點更新失敗', :unprocessable_entity, @location.errors.full_messages)
         end
       end
 
       def destroy
         @location.destroy
-        render json: {
-          success: true,
-          message: '地點已刪除'
-        }
+        api_success(message: '地點已刪除')
       end
 
       private
 
       def set_activity
         @activity = Activity.find(params.require(:location).require(:activity_id))
-      rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          error: '活動未找到'
-        }, status: :not_found
       end
 
       def set_location
         @location = Location.find(params[:id])
-      rescue ActiveRecord::RecordNotFound
-        render json: {
-          success: false,
-          error: '地點未找到'
-        }, status: :not_found
       end
 
       def location_params

@@ -16,21 +16,12 @@ module Api
         end
 
         if temp_user.save
-          render json: {
-            success: true,
-            temp_user:
-          }, status: :created
+          api_success({ temp_user: }, :created)
         else
-          render json: {
-            success: false,
-            errors: temp_user.errors.full_messages
-          }, status: :unprocessable_entity
+          api_error('臨時用戶創建失敗', :unprocessable_entity, temp_user.errors.full_messages)
         end
       else
-        render json: {
-          success: false,
-          error: '裝置識別符缺失'
-        }, status: :bad_request
+        api_error('裝置識別符缺失', :bad_request, code: ErrorCodes::VALIDATION_ERROR)
       end
     end
 
@@ -38,8 +29,6 @@ module Api
 
     def set_activity
       @activity = Activity.find(params[:activity_id])
-    rescue ActiveRecord::RecordNotFound
-      render json: { error: '活動未找到' }, status: :not_found
     end
 
     def temp_user_params

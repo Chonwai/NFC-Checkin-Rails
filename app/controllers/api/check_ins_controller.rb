@@ -6,35 +6,25 @@ module Api
     before_action :set_current_temp_user, only: %i[index index_with_activity show]
 
     def index
-      check_ins = @current_temp_user.check_ins
-      render json: {
-        success: true,
-        check_ins:
-      }
+      api_success(check_ins: @current_temp_user.check_ins)
     end
 
     def index_with_activity
       check_ins = @current_temp_user.check_ins.includes(:location)
-      puts @current_temp_user.check_ins
-      render json: {
-        success: true,
-        check_ins: check_ins.map do |check_in|
-          {
-            id: check_in.id,
-            check_in:,
-            location: check_in.location,
-            activity: check_in.activity
-          }
-        end
-      }
+      formatted_check_ins = check_ins.map do |check_in|
+        {
+          id: check_in.id,
+          check_in:,
+          location: check_in.location,
+          activity: check_in.activity
+        }
+      end
+      api_success(check_ins: formatted_check_ins)
     end
 
     def show
       check_in = @current_temp_user.check_ins.find(params[:id])
-      render json: {
-        success: true,
-        check_in:
-      }
+      api_success(check_in:)
     end
 
     def create
@@ -44,23 +34,15 @@ module Api
       if check_in.save
         begin
           reward = RewardService.new(@current_temp_user).grant_reward
-          render json: {
-            success: true,
-            check_in:,
-            reward:
-          }, status: :created
+          api_success({ check_in:, reward: }, :created)
         rescue StandardError => e
-          render json: {
-            success: true,
-            check_in:,
-            reward_error: e.message
-          }, status: :created
+          api_success(
+            { check_in:, reward_error: e.message },
+            :created
+          )
         end
       else
-        render json: {
-          success: false,
-          errors: check_in.errors.full_messages
-        }, status: :unprocessable_entity
+        api_error('打卡失敗', :unprocessable_entity, check_in.errors.full_messages)
       end
     end
 
@@ -73,21 +55,21 @@ module Api
     def set_current_temp_user
       device_id = request.headers['X-Temp-User-Token']
       @current_temp_user = TempUser.find_by(device_id:)
+      api_error('未授權的臨時用戶', :unauthorized, code: ErrorCodes::UNAUTHORIZED) unless @current_temp_user
     end
 
     def authorize_or_create_temp_user
       device_id = request.headers['X-Temp-User-Token']
 
-      if device_id.present
+      if device_id.present?
         @current_temp_user = TempUser.find_or_create_by(device_id:, activity_id: params[:activity_id]) do |temp_user|
           temp_user.is_temporary = true
           temp_user.meta = { device_id: }
         end
+        return if @current_temp_user
       end
 
-      return if @current_temp_user
-
-      render json: { error: '未授權的臨時用戶' }, status: :unauthorized
+      api_error('未授權的臨時用戶', :unauthorized, code: ErrorCodes::UNAUTHORIZED)
     end
   end
 end
