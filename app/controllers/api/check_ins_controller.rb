@@ -4,6 +4,7 @@ module Api
   class CheckInsController < ApplicationController
     before_action :authorize_or_create_temp_user, only: %i[create]
     before_action :set_current_temp_user, only: %i[index index_with_activity show]
+    before_action :validate_redirect_token, only: %i[create]
 
     def index
       api_success(check_ins: @current_temp_user.check_ins)
@@ -45,6 +46,23 @@ module Api
       end
     end
 
+    def generate_token
+      activity_id = params[:activity_id]
+      location_id = params[:location_id]
+
+      activity = Activity.find_by(id: activity_id, is_active: true)
+      location = Location.find_by(id: location_id, activity_id: activity_id)
+
+      unless activity && location
+        return api_error('無效的活動或地點', ErrorCodes::INVALID_LOCATION)
+      end
+
+      payload = { activity_id: activity.id, location_id: location.id, exp: 10.minutes.from_now.to_i }
+      token = JWT.encode(payload, Rails.application.secret_key_base, 'HS256')
+
+      api_success({ token: }, :ok)
+    end
+
     private
 
     def check_in_params
@@ -70,6 +88,19 @@ module Api
       end
 
       api_error('未授權的臨時用戶', ErrorCodes::UNAUTHORIZED)
+    end
+
+    def validate_redirect_token
+      token = params[:token]
+      decoded = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: 'HS256' }) rescue nil
+
+      if decoded.present?
+        payload = decoded.first
+        @activity_id = payload['activity_id']
+        @location_id = payload['location_id']
+      else
+        api_error('無效的令牌', ErrorCodes::UNAUTHORIZED)
+      end
     end
   end
 end

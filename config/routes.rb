@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     resources :check_ins do
       collection do
         get :index_with_activity
+        post :generate_token
       end
     end
   end
