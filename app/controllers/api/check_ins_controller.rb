@@ -50,8 +50,14 @@ module Api
       activity_id = params[:activity_id]
       location_id = params[:location_id]
 
+      puts "activity_id: #{activity_id}"
+      puts "location_id: #{location_id}"
+
       activity = Activity.find_by(id: activity_id, is_active: true)
       location = Location.find_by(id: location_id, activity_id:)
+
+      puts "activity: #{activity}"
+      puts "location: #{location}"
 
       return api_error('無效的活動或地點', ErrorCodes::INVALID_LOCATION) unless activity && location
 
@@ -94,9 +100,9 @@ module Api
 
     def validate_redirect_token
       token = params[:token]
-      check_in_token = CheckInToken.valid.find_by(token:)
+      check_in_token = CheckInToken.valid_tokens.find_by(token:)
 
-      if check_in_token
+      if check_in_token&.is_valid_token?
         check_in_token.mark_as_used!
         @activity_id = check_in_token.activity_id
         @location_id = check_in_token.location_id

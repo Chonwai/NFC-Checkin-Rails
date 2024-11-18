@@ -14,6 +14,7 @@
 #  updated_at           :datetime         not null
 #  check_in_limit       :integer          default(1)
 #  single_location_only :boolean          default(FALSE)
+#  is_active            :boolean          default(FALSE)
 #
 require 'test_helper'
 
