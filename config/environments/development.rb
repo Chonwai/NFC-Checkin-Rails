@@ -69,5 +69,5 @@ Rails.application.configure do
   config.hosts << 'localhost'
   config.hosts << '127.0.0.1'
   config.hosts << '192.168.50.104'
-  config.hosts << '4d28-45-144-227-44.ngrok-free.app'
+  config.hosts << 'af30-2-58-242-84.ngrok-free.app'
 end
