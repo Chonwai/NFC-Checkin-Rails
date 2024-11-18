@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_241_114_175_912) do
+ActiveRecord::Schema[7.0].define(version: 20_241_118_094_209) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -27,6 +27,20 @@ ActiveRecord::Schema[7.0].define(version: 20_241_114_175_912) do
     t.integer 'check_in_limit', default: 1
     t.boolean 'single_location_only', default: false
     t.boolean 'is_active', default: false
+  end
+
+  create_table 'check_in_tokens', id: :uuid, default: -> { 'gen_random_uuid()' }, force: :cascade do |t|
+    t.uuid 'activity_id', null: false
+    t.uuid 'location_id', null: false
+    t.string 'token', null: false
+    t.datetime 'expires_at', null: false
+    t.datetime 'used_at'
+    t.boolean 'is_used', default: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['activity_id'], name: 'index_check_in_tokens_on_activity_id'
+    t.index ['location_id'], name: 'index_check_in_tokens_on_location_id'
+    t.index ['token'], name: 'index_check_in_tokens_on_token', unique: true
   end
 
   create_table 'check_ins', id: :uuid, default: -> { 'gen_random_uuid()' }, force: :cascade do |t|
@@ -93,6 +107,8 @@ ActiveRecord::Schema[7.0].define(version: 20_241_114_175_912) do
     t.index ['phone'], name: 'index_users_on_phone', unique: true
   end
 
+  add_foreign_key 'check_in_tokens', 'activities'
+  add_foreign_key 'check_in_tokens', 'locations'
   add_foreign_key 'check_ins', 'locations'
   add_foreign_key 'check_ins', 'temp_users'
   add_foreign_key 'locations', 'activities'

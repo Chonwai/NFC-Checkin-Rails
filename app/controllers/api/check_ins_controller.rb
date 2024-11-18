@@ -55,10 +55,14 @@ module Api
 
       return api_error('無效的活動或地點', ErrorCodes::INVALID_LOCATION) unless activity && location
 
-      payload = { activity_id: activity.id, location_id: location.id, exp: 10.minutes.from_now.to_i }
-      token = JWT.encode(payload, Rails.application.secret_key_base, 'HS256')
+      check_in_token = CheckInToken.create!(
+        activity:,
+        location:,
+        token: SecureRandom.uuid,
+        expires_at: 10.minutes.from_now
+      )
 
-      api_success({ token: }, :ok)
+      api_success({ token: check_in_token.token }, :ok)
     end
 
     private
@@ -90,16 +94,12 @@ module Api
 
     def validate_redirect_token
       token = params[:token]
-      decoded = begin
-        JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: 'HS256' })
-      rescue StandardError
-        nil
-      end
+      check_in_token = CheckInToken.valid.find_by(token:)
 
-      if decoded.present?
-        payload = decoded.first
-        @activity_id = payload['activity_id']
-        @location_id = payload['location_id']
+      if check_in_token
+        check_in_token.mark_as_used!
+        @activity_id = check_in_token.activity_id
+        @location_id = check_in_token.location_id
       else
         api_error('無效的令牌', ErrorCodes::UNAUTHORIZED)
       end
