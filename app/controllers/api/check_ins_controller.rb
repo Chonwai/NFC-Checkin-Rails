@@ -51,11 +51,9 @@ module Api
       location_id = params[:location_id]
 
       activity = Activity.find_by(id: activity_id, is_active: true)
-      location = Location.find_by(id: location_id, activity_id: activity_id)
+      location = Location.find_by(id: location_id, activity_id:)
 
-      unless activity && location
-        return api_error('無效的活動或地點', ErrorCodes::INVALID_LOCATION)
-      end
+      return api_error('無效的活動或地點', ErrorCodes::INVALID_LOCATION) unless activity && location
 
       payload = { activity_id: activity.id, location_id: location.id, exp: 10.minutes.from_now.to_i }
       token = JWT.encode(payload, Rails.application.secret_key_base, 'HS256')
@@ -92,7 +90,11 @@ module Api
 
     def validate_redirect_token
       token = params[:token]
-      decoded = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: 'HS256' }) rescue nil
+      decoded = begin
+        JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: 'HS256' })
+      rescue StandardError
+        nil
+      end
 
       if decoded.present?
         payload = decoded.first
