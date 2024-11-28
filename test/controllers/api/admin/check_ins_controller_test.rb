@@ -4,7 +4,7 @@ require 'test_helper'
 
 module Api
   module Admin
-    class DashboardControllerTest < ActionDispatch::IntegrationTest
+    class CheckInsControllerTest < ActionDispatch::IntegrationTest
       # test "the truth" do
       #   assert true
       # end

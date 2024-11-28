@@ -18,6 +18,14 @@ Rails.application.routes.draw do
       get 'dashboard/activity_engagement', to: 'dashboard#activity_engagement'
       get 'dashboard/location_distribution', to: 'dashboard#location_distribution'
       get 'dashboard/user_activity_trend', to: 'dashboard#user_activity_trend'
+      resources :check_ins, only: [] do
+        collection do
+          get 'time_distribution'
+          get 'user_behavior'
+          get 'location_heat_map'
+          get 'completion_trend'
+        end
+      end
     end
 
     resources :locations, only: %i[index show]

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module Admin
     class DashboardController < ApplicationController
@@ -5,7 +7,7 @@ module Api
 
       def stats
         period = params[:period] || 'all_time'
-        
+
         stats = Rails.cache.fetch("admin_dashboard_stats_#{period}", expires_in: 5.minutes) do
           {
             activities: activities_stats(period),
@@ -20,8 +22,8 @@ module Api
 
       def activity_engagement
         activities_data = Activity.includes(:temp_users, :check_ins)
-                                .order(created_at: :desc)
-                                .map do |activity|
+                                  .order(created_at: :desc)
+                                  .map do |activity|
           completion_stats = calculate_completion_stats(activity)
           {
             name: activity.name,
@@ -41,12 +43,12 @@ module Api
 
       def location_distribution
         locations_data = Location.left_joins(:check_ins)
-                               .group('locations.id', 'locations.name')
-                               .select(
-                                 'locations.name',
-                                 'COUNT(check_ins.id) as check_in_count',
-                                 'COUNT(DISTINCT check_ins.temp_user_id) as unique_users'
-                               )
+                                 .group('locations.id', 'locations.name')
+                                 .select(
+                                   'locations.name',
+                                   'COUNT(check_ins.id) as check_in_count',
+                                   'COUNT(DISTINCT check_ins.temp_user_id) as unique_users'
+                                 )
 
         api_success(locations_data:)
       end
@@ -55,10 +57,10 @@ module Api
         trend_data = (0..29).map do |days_ago|
           date = days_ago.days.ago.to_date
           {
-            date: date,
+            date:,
             new_users: TempUser.where('DATE(created_at) = ?', date).count,
             active_users: CheckIn.where('DATE(created_at) = ?', date)
-                               .select('DISTINCT temp_user_id').count
+                                 .select('DISTINCT temp_user_id').count
           }
         end
 
@@ -105,31 +107,35 @@ module Api
 
       def calculate_completion_rate(activity)
         return 0 if activity.temp_users.empty?
-        
+
         completed_users = activity.temp_users
-                                .joins(:check_ins)
-                                .group('temp_users.id')
-                                .having('COUNT(DISTINCT check_ins.location_id) = ?', activity.locations.count)
-                                .count.length
+                                  .joins(:check_ins)
+                                  .group('temp_users.id')
+                                  .having('COUNT(DISTINCT check_ins.location_id) = ?', activity.locations.count)
+                                  .count.length
 
         (completed_users.to_f / activity.temp_users.count * 100).round(2)
       end
 
       def calculate_completion_stats(activity)
         return { full_completion: 0, partial_completion: 0 } if activity.temp_users.empty?
-        
+
         total_locations = activity.locations.count
         user_stats = activity.temp_users
-                            .joins(:check_ins)
-                            .group('temp_users.id')
-                            .select(
-                              'temp_users.id',
-                              'COUNT(DISTINCT check_ins.location_id) as completed_locations'
-                            )
-        
+                             .joins(:check_ins)
+                             .group('temp_users.id')
+                             .select(
+                               'temp_users.id',
+                               'COUNT(DISTINCT check_ins.location_id) as completed_locations'
+                             )
+
         {
-          full_completion: (user_stats.count { |stat| stat.completed_locations == total_locations }.to_f / activity.temp_users.count * 100).round(2),
-          partial_completion: (user_stats.count { |stat| stat.completed_locations > 0 && stat.completed_locations < total_locations }.to_f / activity.temp_users.count * 100).round(2)
+          full_completion: (user_stats.count { |stat|
+                              stat.completed_locations == total_locations
+                            }.to_f / activity.temp_users.count * 100).round(2),
+          partial_completion: (user_stats.count { |stat|
+                                 stat.completed_locations.positive? && stat.completed_locations < total_locations
+                               }.to_f / activity.temp_users.count * 100).round(2)
         }
       end
     end
