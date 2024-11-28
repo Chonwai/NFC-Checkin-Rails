@@ -14,6 +14,10 @@ Rails.application.routes.draw do
     namespace :admin do
       resources :activities
       resources :locations
+      get 'dashboard/stats', to: 'dashboard#stats'
+      get 'dashboard/activity_engagement', to: 'dashboard#activity_engagement'
+      get 'dashboard/location_distribution', to: 'dashboard#location_distribution'
+      get 'dashboard/user_activity_trend', to: 'dashboard#user_activity_trend'
     end
 
     resources :locations, only: %i[index show]

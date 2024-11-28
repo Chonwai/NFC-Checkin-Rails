@@ -19,6 +19,7 @@
 class Activity < ApplicationRecord
   has_many :locations, dependent: :destroy
   has_many :temp_users, dependent: :destroy
+  has_many :check_ins, through: :temp_users
 
   validates :name, presence: true
   validates :start_date, presence: true
@@ -27,11 +28,6 @@ class Activity < ApplicationRecord
   validates :is_active, inclusion: { in: [true, false] }
 
   validate :check_in_limit_consistency
-
-  # 新增方法來獲取所有關聯的 CheckIns
-  def check_ins
-    CheckIn.joins(:temp_user).where(temp_users: { activity_id: id })
-  end
 
   def location_names
     locations.pluck(:name)
