@@ -3,15 +3,20 @@
 module Api
   class CheckInsController < ApplicationController
     before_action :authorize_or_create_temp_user, only: %i[create]
-    before_action :set_current_temp_user, only: %i[index index_with_activity show]
+    before_action :set_current_temp_user, only: %i[show]
+    before_action :set_current_temp_users, only: %i[index index_with_activity]
     before_action :validate_redirect_token, only: %i[create]
 
     def index
-      api_success(check_ins: @current_temp_user.check_ins)
+      api_success(check_ins: @current_temp_users.map(&:check_ins).flatten)
     end
 
     def index_with_activity
-      check_ins = @current_temp_user.check_ins.includes(:location)
+      check_ins = @current_temp_users
+                  .map { |user| user.check_ins.includes(:location) }
+                  .flatten
+                  .sort_by(&:checkin_time)
+                  .reverse
       formatted_check_ins = check_ins.map do |check_in|
         {
           id: check_in.id,
@@ -81,6 +86,11 @@ module Api
       device_id = request.headers['X-Temp-User-Token']
       @current_temp_user = TempUser.find_by(device_id:)
       api_error('你還沒有參與任何活動', :unauthorized, code: ErrorCodes::UNAUTHORIZED) unless @current_temp_user
+    end
+
+    def set_current_temp_users
+      device_id = request.headers['X-Temp-User-Token']
+      @current_temp_users = TempUser.where(device_id:)
     end
 
     def authorize_or_create_temp_user
