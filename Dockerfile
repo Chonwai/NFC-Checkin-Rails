@@ -15,8 +15,8 @@ RUN bundle install
 COPY . .
 
 # 預編譯資產（如果您的應用需要）
-# ENV RAILS_ENV=production
-# ENV RAILS_SERVE_STATIC_FILES=true
+ENV RAILS_ENV=production
+ENV RAILS_SERVE_STATIC_FILES=true
 # RUN bundle exec rails assets:precompile
 
 # 設置入口點
@@ -25,7 +25,7 @@ RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
 # 暴露端口
-EXPOSE 80
+EXPOSE 3000
 
 # 啟動 Rails 服務器
 CMD ["rails", "server", "-b", "0.0.0.0"]
