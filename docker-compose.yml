@@ -3,9 +3,9 @@ services:
   web:
     build: .
     ports:
-      - "3000:3000"
+      - "80:80" # 將容器內的 80 端口暴露到主機的 80 端口
     environment:
       RAILS_ENV: 'production'
     volumes:
       - .:/app
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 80 -b '0.0.0.0'"
