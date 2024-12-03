@@ -25,7 +25,7 @@ RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
 # 暴露端口
-EXPOSE 80
+EXPOSE 3000
 
 # 啟動 Rails 服務器
-CMD ["rails", "server", "-b", "0.0.0.0", "-p", "80"]
+CMD ["rails", "server", "-b", "0.0.0.0"]
