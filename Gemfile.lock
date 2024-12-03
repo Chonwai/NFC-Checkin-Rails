@@ -193,7 +193,7 @@ DEPENDENCIES
   debug
   dotenv-rails
   kaminari
-  pg (~> 1.1)
+  pg (~> 1.4)
   puma (~> 5.0)
   rack-cors
   rails (~> 7.0.8, >= 7.0.8.6)

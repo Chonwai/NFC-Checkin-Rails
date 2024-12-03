@@ -79,8 +79,18 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+# production:
+#   <<: *default
+#   database: nfc_checkin_rails_production
+#   username: nfc_checkin_rails
+#   password: <%= ENV["NFC_CHECKIN_RAILS_DATABASE_PASSWORD"] %>
 production:
-  <<: *default
-  database: nfc_checkin_rails_production
-  username: nfc_checkin_rails
-  password: <%= ENV["NFC_CHECKIN_RAILS_DATABASE_PASSWORD"] %>
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV['DATABASE_HOST'] %>
+  port: 5432
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  sslmode: require

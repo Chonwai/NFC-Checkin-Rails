@@ -25,5 +25,11 @@ module NfcCheckinRails
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    if Rails.env.development? || Rails.env.test?
+      Dotenv.load('.env')
+    elsif Rails.env.production?
+      Dotenv.load('.env.production')
+    end
   end
 end

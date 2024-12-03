@@ -9,7 +9,7 @@ ruby '3.1.0'
 gem 'rails', '~> 7.0.8', '>= 7.0.8.6'
 
 # Use postgresql as the database for Active Record
-gem 'pg', '~> 1.1'
+gem 'pg', '~> 1.4'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '~> 5.0'
@@ -51,7 +51,7 @@ group :development do
   gem 'annotate'
 end
 
-gem 'dotenv-rails', groups: %i[development test]
+gem 'dotenv-rails'
 gem 'rack-cors'
 
 gem 'api-pagination'
