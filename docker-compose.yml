@@ -2,15 +2,9 @@ version: '3'
 services:
   web:
     build: .
-    ports:
-      - "80:3000"
+    ports: "80:3000"
     environment:
-      - RAILS_ENV=production
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
-      - DATABASE_URL=${DATABASE_URL}
-      - RAILS_SERVE_STATIC_FILES=true
-    env_file:
-      - .env.production
-    volumes:
-      - .:/app
+      RAILS_ENV: production
+    env_file: .env.production
+    volumes: .:/app
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 80 -b '0.0.0.0'"
