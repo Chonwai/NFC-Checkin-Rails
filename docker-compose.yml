@@ -3,11 +3,9 @@ services:
   web:
     build: .
     ports:
-      - "80:80"
+      - "3000:3000"
     environment:
-      - RAILS_ENV=production
-    env_file:
-      - .env.production
+      RAILS_ENV: 'production'
     volumes:
       - .:/app
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 80 -b '0.0.0.0'"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0' -e production"
