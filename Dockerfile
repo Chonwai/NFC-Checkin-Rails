@@ -3,7 +3,7 @@ FROM ruby:3.1.0
 
 # 安裝必要的依賴並添加 PostgreSQL 官方倉庫
 RUN apt-get update -qq && \
-    apt-get install -y wget gnupg2 && \
+    apt-get install -y wget gnupg2 lsb-release && \
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
     apt-get update -qq && \
@@ -35,4 +35,4 @@ ENTRYPOINT ["entrypoint.sh"]
 EXPOSE 80
 
 # 啟動 Rails 服務器
-CMD ["rails", "server", "-b", "0.0.0.0"]
+CMD ["rails", "server", "-b", "0.0.0.0", "-p", "80", "-e", "production"]
