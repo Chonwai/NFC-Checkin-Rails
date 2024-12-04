@@ -10,7 +10,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://localhost:3000',
-            'http://192.168.50.104:3000', 'https://nfc-checkin-nextjs-demo.vercel.app', 'https://prod-nfc-checkin-nextjs.vercel.app', 'https://nfc.travel3exp.xyz'
+            'http://192.168.50.104:3000', 'https://nfc-checkin-nextjs-demo.vercel.app', 'https://prod-nfc-checkin-nextjs.vercel.app', 'https://nfc.travel3exp.xyz', 'https://stamp.travel3exp.xyz'
 
     resource '*',
              headers: :any,

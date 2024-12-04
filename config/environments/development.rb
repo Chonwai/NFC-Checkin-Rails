@@ -71,4 +71,5 @@ Rails.application.configure do
   config.hosts << '192.168.50.104'
   config.hosts << '5906-2-58-242-76.ngrok-free.app'
   config.hosts << 'stamp.travel3exp.xyz'
+  config.hosts << 'nfc.travel3exp.xyz'
 end
