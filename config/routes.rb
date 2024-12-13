@@ -8,7 +8,11 @@ Rails.application.routes.draw do
       end
       # resources :check_ins, only: %i[create index]
       resources :temp_users, only: [:create]
-      resources :rewards, only: %i[index show update]
+      resources :rewards, only: %i[index show update] do
+        collection do
+          get :query_rewards
+        end
+      end
     end
 
     namespace :admin do

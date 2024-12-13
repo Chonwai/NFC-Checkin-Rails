@@ -21,6 +21,16 @@ module Api
       end
     end
 
+    def query_rewards
+      result = @current_temp_user.activity.get_user_rewards(@current_temp_user.id)
+
+      if result[:success]
+        api_success(rewards: result[:data])
+      else
+        api_error(result[:error], :service_unavailable)
+      end
+    end
+
     private
 
     def reward_params

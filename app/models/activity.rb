@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require 'net/http'
+require 'uri'
+require 'json'
+
 # == Schema Information
 #
 # Table name: activities
@@ -51,6 +55,70 @@ class Activity < ApplicationRecord
   # 添加一個方法來檢查活動是否活躍
   def active?
     is_active
+  end
+
+  def has_reward_system?
+    meta.dig('reward_api', 'issue_endpoint').present? &&
+      meta.dig('reward_api', 'query_endpoint').present?
+  end
+
+  def reward_api_config
+    return nil unless has_reward_system?
+
+    {
+      'issue_endpoint' => meta.dig('reward_api', 'issue_endpoint'),
+      'query_endpoint' => meta.dig('reward_api', 'query_endpoint')
+    }
+  end
+
+  def issue_reward(temp_user)
+    return { success: false, error: '此活動未設置獎勵系統' } unless has_reward_system?
+    return { success: false, error: '未達到打卡要求' } unless check_in_limit_reached?(temp_user)
+
+    begin
+      uri = URI(reward_api_config['issue_endpoint'])
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = uri.scheme == 'https'
+      
+      request = Net::HTTP::Post.new(uri)
+      request['Content-Type'] = 'application/json'
+      request.body = { userId: temp_user.id }.to_json
+
+      response = http.request(request)
+
+      if response.is_a?(Net::HTTPSuccess)
+        data = JSON.parse(response.body)
+        { success: true, data: data['data'] }
+      else
+        Rails.logger.error "獎勵發放失敗: #{response.body}"
+        { success: false, error: '獎勵發放失敗' }
+      end
+    rescue StandardError => e
+      Rails.logger.error "獎勵系統錯誤: #{e.message}"
+      { success: false, error: '獎勵系統發生錯誤' }
+    end
+  end
+
+  def get_user_rewards(user_id)
+    return { success: false, error: '此活動未設置獎勵系統' } unless has_reward_system?
+
+    begin
+      endpoint = format(reward_api_config['query_endpoint'], user_id:)
+      puts "endpoint: #{endpoint}"
+      uri = URI(endpoint)
+      response = Net::HTTP.get_response(uri)
+
+      if response.is_a?(Net::HTTPSuccess)
+        data = JSON.parse(response.body)
+        { success: true, data: data['data'] }
+      else
+        Rails.logger.error "獎勵查詢失敗: #{response.body}"
+        { success: false, error: '獎勵查詢失敗' }
+      end
+    rescue StandardError => e
+      Rails.logger.error "獎勵查詢錯誤: #{e.message}"
+      { success: false, error: '獎勵查詢系統發生錯誤' }
+    end
   end
 
   private

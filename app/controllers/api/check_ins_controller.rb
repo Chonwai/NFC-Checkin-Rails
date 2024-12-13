@@ -38,13 +38,26 @@ module Api
       check_in.checkin_time = Time.current
 
       if check_in.save
-        begin
+        activity = check_in.activity
+
+        if activity.has_reward_system? && activity.check_in_limit_reached?(@current_temp_user)
+          reward_result = activity.issue_reward(@current_temp_user)
+
+          puts "reward_result: #{reward_result}"
+
+          if reward_result[:success]
+            api_success({
+                          check_in:,
+                          reward: reward_result[:data]
+                        }, :created)
+          else
+            api_success({
+                          check_in:,
+                          reward_error: reward_result[:error]
+                        }, :created)
+          end
+        else
           api_success({ check_in: }, :created)
-        rescue StandardError => e
-          api_success(
-            { check_in:, reward_error: e.message },
-            :created
-          )
         end
       else
         api_error('打卡失敗', :unprocessable_entity, check_in.errors.full_messages)
