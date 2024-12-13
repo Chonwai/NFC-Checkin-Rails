@@ -123,12 +123,12 @@ module Api
         if activity.single_location_only
           # 單地點活動：檢查打卡次數是否達到 check_in_limit
           user_stats = activity.temp_users
-                              .joins(:check_ins)
-                              .group('temp_users.id')
-                              .select(
-                                'temp_users.id',
-                                'COUNT(check_ins.id) as check_in_count'
-                              )
+                               .joins(:check_ins)
+                               .group('temp_users.id')
+                               .select(
+                                 'temp_users.id',
+                                 'COUNT(check_ins.id) as check_in_count'
+                               )
 
           {
             full_completion: (user_stats.count { |stat|
@@ -142,12 +142,12 @@ module Api
           # 多地點活動：檢查是否完成所有地點
           total_locations = activity.locations.count
           user_stats = activity.temp_users
-                              .joins(:check_ins)
-                              .group('temp_users.id')
-                              .select(
-                                'temp_users.id',
-                                'COUNT(DISTINCT check_ins.location_id) as completed_locations'
-                              )
+                               .joins(:check_ins)
+                               .group('temp_users.id')
+                               .select(
+                                 'temp_users.id',
+                                 'COUNT(DISTINCT check_ins.location_id) as completed_locations'
+                               )
 
           {
             full_completion: (user_stats.count { |stat|

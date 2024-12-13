@@ -79,7 +79,7 @@ class Activity < ApplicationRecord
       uri = URI(reward_api_config['issue_endpoint'])
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = uri.scheme == 'https'
-      
+
       request = Net::HTTP::Post.new(uri)
       request['Content-Type'] = 'application/json'
       request.body = { userId: temp_user.id }.to_json
