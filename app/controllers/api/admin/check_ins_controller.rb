@@ -31,7 +31,7 @@ module Api
                              'locations.name',
                              'COUNT(check_ins.id) as check_in_count',
                              'COUNT(DISTINCT check_ins.temp_user_id) as unique_users',
-                             'AVG(EXTRACT(HOUR FROM check_ins.checkin_time)) as avg_check_in_hour'
+                             'percentile_cont(0.5) WITHIN GROUP (ORDER BY EXTRACT(HOUR FROM check_ins.checkin_time)) as median_check_in_hour'
                            )
                            .order('check_in_count DESC')
 
